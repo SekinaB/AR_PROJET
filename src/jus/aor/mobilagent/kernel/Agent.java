@@ -2,6 +2,13 @@ package jus.aor.mobilagent.kernel;
 
 public class Agent implements _Agent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private Route route;
+
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
@@ -10,8 +17,7 @@ public class Agent implements _Agent {
 
 	@Override
 	public void addEtape(Etape etape) {
-		// TODO Auto-generated method stub
-
+		route.add(etape);
 	}
 
 	@Override

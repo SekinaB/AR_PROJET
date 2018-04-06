@@ -10,60 +10,99 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * D√©finit la feuille de route que l'agent va suivre
- * @author  Morat
+ * DÈfinit la feuille de route que l'agent va suivre
+ * @author Morat
  */
-class Route implements Iterable<Etape>, Serializable{
+class Route implements Iterable<Etape>, Serializable {
 	private static final long serialVersionUID = 9081294824590167316L;
-	/** la liste des √©tapes √† parcourir autres que la derni√®re */
+	
+	/** la liste des Ètapes ‡ parcourir autres que la derniËre */
 	protected List<Etape> route;
-	/** la derni√®re √©tape de la feuille de route de l'agent qui d√©signe le serveur de d√©part. */
+	
+	/**
+	 * la derniËre Ètape de la feuille de route de l'agent qui dÈsigne le
+	 * serveur de dÈpart.
+	 */
 	protected Etape retour;
+	
 	/** Indique si la feuille de route est √©puis√©e ou non. */
 	protected boolean hasNext;
+
 	/**
 	 * Construction d'une route.
-	 * @param retour  le server initial et de retour.
+	 * @param retour
+	 *            le server initial et de retour.
 	 */
 	public Route(Etape retour) {
 		route = new LinkedList<Etape>();
 		this.retour = retour;
-		hasNext=true;
+		hasNext = true;
 	}
+
 	/**
-	 * Ajoute une √©tape en fin de route.
-	 * @param e l'√©tape √† ajouter
+	 * Ajoute une Ètape en fin de route.
+	 * 
+	 * @param e
+	 *            l'Ètape ‡ ajouter
 	 */
-	public void add(Etape e) { route.add(route.size(),e);}
+	public void add(Etape e) {
+		route.add(route.size(), e);
+	}
+
 	/**
-	 * Restitue la prochaine √©tape ou la derni√®re qui est la base de d√©part.
-	 * @return la prochaine √©tape.
+	 * Restitue la prochaine Ètape ou la derniËre qui est la base de dÈpart.
+	 * @return la prochaine Ètape.
 	 */
 	Etape get() throws NoSuchElementException {
-		return retour;
-		//A COMPLETER
+		if(this.hasNext()){
+			return this.iterator().next();
+		}
+		else {
+			return retour;
+		}
 	}
+
 	/**
-	 * Restitue la prochaine √©tape et √©limine de la route ou la derni√®re qui est la base de d√©part.
-	 * @return la prochaine √©tape.
+	 * Restitue la prochaine Ètape et Èlimine de la route ou la derniËre qui
+	 * est la base de d"part.
+	 * @return la prochaine Ètape.
 	 */
 	Etape next() throws NoSuchElementException {
-		return retour;
-		//A COMPLETER
+		Etape next;
+		if(this.hasNext()){
+			next = this.iterator().next();
+			this.iterator().remove();
+			return next;
+		}
+		else {
+			return retour;
+		}
 	}
+
 	/**
 	 * Il y a-t-il encore une √©tape √† parcourir.
 	 * @return vrai si une √©tape est possible.
 	 */
-	public boolean hasNext() { return hasNext;}
+	public boolean hasNext() {
+		return hasNext;
+	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Iterable#iterator()
 	 */
-	public Iterator<Etape> iterator(){return route.iterator();}
-	/* (non-Javadoc)
+	public Iterator<Etape> iterator() {
+		return route.iterator();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
-	public String toString() {return route.toString().replaceAll(", ","->");}
+	public String toString() {
+		return route.toString().replaceAll(", ", "->");
+	}
 }
