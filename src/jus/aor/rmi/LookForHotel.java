@@ -27,7 +27,6 @@ public class LookForHotel{
 	int nombre_chaines = 4; 
     int port = 1234;
     private List<Hotel> hotelsLocated;
-    private HashMap<String, Numero> listeNumeros;
 	// ...
 	/**
 	 * Définition de l'objet représentant l'interrogation.
@@ -50,7 +49,6 @@ public class LookForHotel{
 		else {
 			localisation = args[0];
 			hotelsLocated = new ArrayList<Hotel>();
-			listeNumeros = new HashMap<String,Numero>();
 		}
 		
 		if (System.getSecurityManager() == null) {
