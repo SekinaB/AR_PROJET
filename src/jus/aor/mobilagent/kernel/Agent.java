@@ -1,6 +1,7 @@
 package jus.aor.mobilagent.kernel;
 
 import java.net.URI;
+import java.net.URL;
 
 public class Agent implements _Agent {
 
@@ -58,7 +59,7 @@ public class Agent implements _Agent {
 		// TODO
 	}
 
-	protected void move(URI uri) {
+	protected void move(URL url) {
 		// TODO
 	}
 
@@ -66,8 +67,8 @@ public class Agent implements _Agent {
 		// TODO
 		return null;
 	}
-	
-	protected String route(){
+
+	protected String route() {
 		return this.route();
 	}
 }
