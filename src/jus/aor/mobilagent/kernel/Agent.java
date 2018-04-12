@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.net.URI;
+import java.util.NoSuchElementException;
 
 public class Agent implements _Agent {
 
@@ -33,15 +34,26 @@ public class Agent implements _Agent {
 	private AgentServer server;
 	private String serverName;
 
-	public Agent(Object... args){
-		
+	public Agent(Object... args) {
+
 	}
-	
+
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		if (route.hasNext()) {
-			// TODO Agent stuff
+		try {
+			// Je prends la prochaine Ã©tape
+			Etape etape = route.next();
+			
+			//J'exec l'action associÃ©e
+			etape.action.execute();
+			
+			// Si j'ai encore de la route Ã  faire j'avance
+			if (route.hasNext()) {
+				move();
+			}
+			// Sinon j'ai fini mon travail
+		} catch (NoSuchElementException e) {
+			System.out.println(toString() + " rentre du boulot");
 		}
 	}
 
@@ -51,9 +63,13 @@ public class Agent implements _Agent {
 	}
 
 	/**
-	 * Initialise l'agent lors de son déploiement initial dans le bus à agents mobiles.
-	 * @param agentServer le serveur hébergeant initialement l'agent.
-	 * @param serverName le nom logique du serveur d'agent
+	 * Initialise l'agent lors de son dï¿½ploiement initial dans le bus ï¿½ agents
+	 * mobiles.
+	 * 
+	 * @param agentServer
+	 *            le serveur hï¿½bergeant initialement l'agent.
+	 * @param serverName
+	 *            le nom logique du serveur d'agent
 	 */
 	@Override
 	/*
@@ -68,10 +84,13 @@ public class Agent implements _Agent {
 	}
 
 	/**
-	 * Initialise l'agent lors de son déploiement sur un des serveurs du bus.
-	 * @param server le server actuel pour cet agent
-	 * @param serverName le nom logique du serveur d'agent
-	 * @throws UnknownHostException 
+	 * Initialise l'agent lors de son dï¿½ploiement sur un des serveurs du bus.
+	 * 
+	 * @param server
+	 *            le server actuel pour cet agent
+	 * @param serverName
+	 *            le nom logique du serveur d'agent
+	 * @throws UnknownHostException
 	 */
 	@Override
 	public void reInit(AgentServer server, String serverName) {
@@ -101,7 +120,7 @@ public class Agent implements _Agent {
 			// Completely useless, but I need them for psychological reasons
 			InputStream is = socket.getInputStream();
 			ObjectInputStream ois = new ObjectInputStream(is);
-			
+
 			// ClassLoader stuff : page 4 Figure 3
 			BAMAgentClassLoader BAMAcl = (BAMAgentClassLoader) this.getClass().getClassLoader();
 			Jar BAMAcljar = BAMAcl.extractCode();
@@ -115,11 +134,11 @@ public class Agent implements _Agent {
 			// Close sockets
 			oos.close();
 			os.close();
-			
+
 			// TODO : enlever
 			ois.close();
 			is.close();
-			
+
 			socket.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
