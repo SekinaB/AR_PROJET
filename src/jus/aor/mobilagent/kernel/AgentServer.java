@@ -7,17 +7,14 @@ import java.util.logging.Logger;
 import java.net.*;
 
 /**
-<<<<<<< HEAD
- * Le server qui supporte le modèle du bus à agents mobiles "mobilagent".
- * Lorsqu'un agent se présente, le serveur charge son codebase et l'objet
- * représentant cet agent, puis il active cet objet qui exécute l'action que
- * l'agent a à réaliser sur ce serveur.
-=======
- * Le server qui supporte le modï¿½le du bus ï¿½ agents mobiles "mobilagent".
- * Lorsqu'un agent se prï¿½sente, le serveur charge son codebase et l'objet
- * reprï¿½sentant cet agent, puis il active cet objet qui exï¿½cute l'action que
- * l'agent a ï¿½ rï¿½aliser sur ce serveur.
->>>>>>> branch 'Objectif3' of https://github.com/SekinaB/AR_PROJET
+ * <<<<<<< HEAD Le server qui supporte le modï¿½le du bus ï¿½ agents mobiles
+ * "mobilagent". Lorsqu'un agent se prï¿½sente, le serveur charge son codebase et
+ * l'objet reprï¿½sentant cet agent, puis il active cet objet qui exï¿½cute l'action
+ * que l'agent a ï¿½ rï¿½aliser sur ce serveur. ======= Le server qui supporte le
+ * modï¿½le du bus ï¿½ agents mobiles "mobilagent". Lorsqu'un agent se prï¿½sente, le
+ * serveur charge son codebase et l'objet reprï¿½sentant cet agent, puis il active
+ * cet objet qui exï¿½cute l'action que l'agent a ï¿½ rï¿½aliser sur ce serveur.
+ * >>>>>>> branch 'Objectif3' of https://github.com/SekinaB/AR_PROJET
  * 
  * @author Morat
  */
@@ -26,7 +23,7 @@ final class AgentServer {
 	private Logger logger;
 	/** La table des services utilisables sur ce serveur */
 	private Map<String, _Service<?>> services;
-	/** Le port auquel est attaché le serveur */
+	/** Le port auquel est attachï¿½ le serveur */
 	private int port;
 	/** l'ï¿½tat du serveur */
 	private boolean running;
@@ -39,11 +36,10 @@ final class AgentServer {
 	 * L'initialisation du server
 	 * 
 	 * @param port
-<<<<<<< HEAD
-	 *            the port où est attaché le srvice du bus à agents mobiles
-=======
-	 *            the port oï¿½ est attachï¿½ le srvice du bus ï¿½ agents mobiles
->>>>>>> branch 'Objectif3' of https://github.com/SekinaB/AR_PROJET
+	 *            <<<<<<< HEAD the port oï¿½ est attachï¿½ le srvice du bus ï¿½ agents
+	 *            mobiles ======= the port oï¿½ est attachï¿½ le srvice du bus ï¿½
+	 *            agents mobiles >>>>>>> branch 'Objectif3' of
+	 *            https://github.com/SekinaB/AR_PROJET
 	 * @param name
 	 *            le nom du serveur
 	 * @throws Exception
@@ -66,10 +62,19 @@ final class AgentServer {
 	void run() throws IOException, ClassNotFoundException {
 		running = true;
 		s = new ServerSocket(this.port);
+
+		// On doit toujours Ãªtre Ã  l'Ã©coute
+		// TODO : correct this stuff I'm sure it's wrong
 		while (true) {
 			// Accepter clients
 			Socket clientSocket = s.accept();
-			// Some stuff
+
+			// Je choppe l'agent
+			Agent agent = (Agent) this.getAgent(clientSocket);
+
+			// Je dÃ©marre l'agent
+			agent.run();
+
 		}
 		// A COMPLETER
 	}
@@ -101,8 +106,9 @@ final class AgentServer {
 	}
 
 	/**
-	 * restitue le service de nom name ou null si celui-ci n'est pas attaché au
+	 * restitue le service de nom name ou null si celui-ci n'est pas attachï¿½ au
 	 * serveur.
+	 * 
 	 * @param name
 	 * @return le service souhaitï¿½ ou null
 	 */
@@ -112,7 +118,7 @@ final class AgentServer {
 
 	/**
 	 * restitue l'URI de ce serveur qui est de la forme :
-	 * "mobilagent://<host>:<port>" ou null si cette opération échoue.
+	 * "mobilagent://<host>:<port>" ou null si cette opï¿½ration ï¿½choue.
 	 * 
 	 * @return l'URI du serveur
 	 */
@@ -125,24 +131,53 @@ final class AgentServer {
 	}
 
 	private _Agent getAgent(Socket aSocket) {
+		BAMAgentClassLoader BAMAcl = new BAMAgentClassLoader(getClass().getClassLoader());
 		// TODO
+		// J'ouvre le stream d'entrÃ©e
+		InputStream is;
+		try {
+			is = aSocket.getInputStream();
+			AgentInputStream ois = new AgentInputStream(is, null);
+
+			// Je choppe le Jar
+			Object obj = ois.readObject();
+			if (obj.getClass().getSimpleName() == "Jar") {
+				// Give it the right type
+				Jar BAMAcljar = (Jar) obj;
+				// Integrate the code in the new class loader
+				BAMAcl.integrateCode(BAMAcljar);
+				// Read what's next
+				obj = ois.readObject();
+			}
+
+			// Je choppe l'agent
+			if (obj.getClass().getSimpleName() == "_Agent") {
+				// Give it the right type
+				_Agent agent = (_Agent) obj;
+
+				// Initialisation de l'agent
+				agent.reInit(this, name);
+
+				return agent;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 }
 
 /**
-<<<<<<< HEAD
- * ObjectInputStream spécifique au bus à agents mobiles. Il permet d'utiliser le
-=======
- * ObjectInputStream spï¿½cifique au bus ï¿½ agents mobiles. Il permet d'utiliser le
->>>>>>> branch 'Objectif3' of https://github.com/SekinaB/AR_PROJET
- * loader de l'agent.
+ * <<<<<<< HEAD ObjectInputStream spï¿½cifique au bus ï¿½ agents mobiles. Il permet
+ * d'utiliser le ======= ObjectInputStream spï¿½cifique au bus ï¿½ agents mobiles.
+ * Il permet d'utiliser le >>>>>>> branch 'Objectif3' of
+ * https://github.com/SekinaB/AR_PROJET loader de l'agent.
  * 
  * @author Morat
  */
 class AgentInputStream extends ObjectInputStream {
 	/**
-	 * le classLoader à utiliser
+	 * le classLoader ï¿½ utiliser
 	 */
 	BAMAgentClassLoader loader;
 
