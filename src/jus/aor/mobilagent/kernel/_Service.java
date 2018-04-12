@@ -4,18 +4,22 @@
 package jus.aor.mobilagent.kernel;
 
 /**
- * Définition d'un service pouvant intégrer un serveur.
- * Le constructeur d'un service devra avoir la signature suivante :
- * 	<bold>public XXXX(Object...)</bold>
+ * Définition d'un service pouvant intégrer un serveur. Le constructeur d'un
+ * service devra avoir la signature suivante : <bold>public
+ * XXXX(Object...)</bold>
+ * 
  * @author Morat
- * @param <T> le type d'information délivrée par le service
+ * @param <T>
+ *            le type d'information délivrée par le service
  */
 public interface _Service<T> {
 	/**
 	 * Appel générique du service.
-	 * @param params les paramètres du services
+	 * 
+	 * @param params
+	 *            les paramètres du services
 	 * @return la valeur retournée par le service.
-	 * @throws IllegalArgumentException 
+	 * @throws IllegalArgumentException
 	 */
 	public T call(Object... params) throws IllegalArgumentException;
 }

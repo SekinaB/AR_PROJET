@@ -118,7 +118,7 @@ public class Starter implements _Server {
 	 * @param args
 	 *            les arguments de la construction du service
 	 */
-	protected void addService(String name, String classeName, String codeBase, Object... args) {
+	public void addService(String name, String classeName, String codeBase, Object... args) {
 		try {
 			server.addService(name, classeName, codeBase, args);
 		} catch (Exception e) {
@@ -164,7 +164,7 @@ public class Starter implements _Server {
 	 * @param serverAction
 	 *            la liste des actions des étapes
 	 */
-	protected void deployAgent(String classeName, Object[] args, String codeBase, List<String> serverAddress,
+	public void deployAgent(String classeName, Object[] args, String codeBase, List<String> serverAddress,
 			List<String> serverAction) {
 		try {
 			server.deployAgent(classeName, args, codeBase, serverAddress, serverAction);

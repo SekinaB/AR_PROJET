@@ -7,10 +7,17 @@ import java.util.logging.Logger;
 import java.net.*;
 
 /**
+<<<<<<< HEAD
  * Le server qui supporte le modèle du bus à agents mobiles "mobilagent".
  * Lorsqu'un agent se présente, le serveur charge son codebase et l'objet
  * représentant cet agent, puis il active cet objet qui exécute l'action que
  * l'agent a à réaliser sur ce serveur.
+=======
+ * Le server qui supporte le modï¿½le du bus ï¿½ agents mobiles "mobilagent".
+ * Lorsqu'un agent se prï¿½sente, le serveur charge son codebase et l'objet
+ * reprï¿½sentant cet agent, puis il active cet objet qui exï¿½cute l'action que
+ * l'agent a ï¿½ rï¿½aliser sur ce serveur.
+>>>>>>> branch 'Objectif3' of https://github.com/SekinaB/AR_PROJET
  * 
  * @author Morat
  */
@@ -21,7 +28,7 @@ final class AgentServer {
 	private Map<String, _Service<?>> services;
 	/** Le port auquel est attaché le serveur */
 	private int port;
-	/** l'état du serveur */
+	/** l'ï¿½tat du serveur */
 	private boolean running;
 	/** la socket de communication du bus */
 	private ServerSocket s;
@@ -32,7 +39,11 @@ final class AgentServer {
 	 * L'initialisation du server
 	 * 
 	 * @param port
+<<<<<<< HEAD
 	 *            the port où est attaché le srvice du bus à agents mobiles
+=======
+	 *            the port oï¿½ est attachï¿½ le srvice du bus ï¿½ agents mobiles
+>>>>>>> branch 'Objectif3' of https://github.com/SekinaB/AR_PROJET
 	 * @param name
 	 *            le nom du serveur
 	 * @throws Exception
@@ -53,6 +64,13 @@ final class AgentServer {
 	 * @throws ClassNotFoundException
 	 */
 	void run() throws IOException, ClassNotFoundException {
+		running = true;
+		s = new ServerSocket(this.port);
+		while (true) {
+			// Accepter clients
+			Socket clientSocket = s.accept();
+			// Some stuff
+		}
 		// A COMPLETER
 	}
 
@@ -86,7 +104,7 @@ final class AgentServer {
 	 * restitue le service de nom name ou null si celui-ci n'est pas attaché au
 	 * serveur.
 	 * @param name
-	 * @return le service souhaité ou null
+	 * @return le service souhaitï¿½ ou null
 	 */
 	_Service<?> getService(String name) {
 		return services.get(name);
@@ -105,10 +123,19 @@ final class AgentServer {
 			return null;
 		}
 	}
+
+	private _Agent getAgent(Socket aSocket) {
+		// TODO
+		return null;
+	}
 }
 
 /**
+<<<<<<< HEAD
  * ObjectInputStream spécifique au bus à agents mobiles. Il permet d'utiliser le
+=======
+ * ObjectInputStream spï¿½cifique au bus ï¿½ agents mobiles. Il permet d'utiliser le
+>>>>>>> branch 'Objectif3' of https://github.com/SekinaB/AR_PROJET
  * loader de l'agent.
  * 
  * @author Morat
