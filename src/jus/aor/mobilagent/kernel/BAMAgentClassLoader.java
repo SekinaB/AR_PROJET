@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 public class BAMAgentClassLoader extends ClassLoader {
+	
 	BAMAgentClassLoader(String jarName,ClassLoader parent){
 		try {
 			Jar jar = new Jar(jarName);
@@ -16,4 +17,5 @@ public class BAMAgentClassLoader extends ClassLoader {
 			e.printStackTrace();
 		}
 	}
+	
 }

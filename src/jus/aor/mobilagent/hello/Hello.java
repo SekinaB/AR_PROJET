@@ -16,6 +16,11 @@ import jus.aor.mobilagent.kernel.Agent;
 public class Hello extends Agent{
 
 	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	  * construction d'un agent de type hello.
 	  * @param args aucun argument n'est requis
 	  */
