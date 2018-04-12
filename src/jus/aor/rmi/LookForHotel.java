@@ -63,6 +63,7 @@ public class LookForHotel{
 	 * @throws RemoteException
 	 */
 	public long call() throws RemoteException, NotBoundException {
+		long startingTime = System.currentTimeMillis();
 		Registry registry = null;
 		Numero numero;
 		for(int i=1;i<=nombre_chaines;i++){
@@ -80,13 +81,15 @@ public class LookForHotel{
 			System.out.println(hotel.name +", Numéro :" + numero.toString());
 			
 		}
-		return nombre_chaines;
+		long currentTime = System.currentTimeMillis();
+		
+		return currentTime - startingTime;
 		
 	}
 	
 	 public static void main(final String args[]) throws MalformedURLException, RemoteException, NotBoundException {
 		 LookForHotel client = new LookForHotel(args);
-		 client.call();
+		 System.out.println("\nThis request took arround " + client.call() + "ms \n");
 	 }
 
 	
