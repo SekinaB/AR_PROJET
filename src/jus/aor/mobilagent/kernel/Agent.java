@@ -1,12 +1,21 @@
 package jus.aor.mobilagent.kernel;
 
+import java.io.DataInputStream;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.net.URI;
-import java.net.URL;
 
 public class Agent implements _Agent {
 
-	public Agent(Object a) {
+	long id;
 
+	public Agent(Object a) {
+		// TODO : Arranger ce truc qui sert à rien
+		this.id = System.currentTimeMillis();
+		System.out.print(this.toString());
 	}
 
 	/**
@@ -56,16 +65,55 @@ public class Agent implements _Agent {
 	}
 
 	private void move() {
-		// TODO
+		// On bouge à la prochaine étape
+		move(route.get().server);
 	}
 
-	protected void move(URL url) {
-		// TODO
+	protected void move(URI uri) {
+		// Ouvrir une socket
+		Socket socket;
+		try {
+			socket = new Socket(uri.getHost(), uri.getPort());
+
+			System.out.println(
+					this.toString() + " : Connected to " + socket.getInetAddress() + " URI path : " + uri.getPath());
+
+			// Ouvrir un stream out et ObjOut
+			OutputStream os = socket.getOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+
+			// TODO : enlever ces lignes
+			// Completely useless, but I need them for psychological reasons
+			InputStream is = socket.getInputStream();
+			ObjectInputStream ois = new ObjectInputStream(is);
+			
+			// ClassLoader stuff : page 4 Figure 3
+			BAMAgentClassLoader BAMAcl = (BAMAgentClassLoader) this.getClass().getClassLoader();
+			Jar BAMAcljar = BAMAcl.extractCode();
+
+			// Send BAMAcljar
+			oos.writeObject(BAMAcljar);
+
+			// Send Agent
+			oos.writeObject(this);
+
+			// Close sockets
+			oos.close();
+			os.close();
+			
+			// TODO : enlever
+			ois.close();
+			is.close();
+			
+			socket.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public String toString() {
-		// TODO
-		return null;
+		return "Agent : " + this.id;
 	}
 
 	protected String route() {
