@@ -80,6 +80,10 @@ final class AgentServer implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	
+	public void stop(){
+		this.running = false;
+	}
 
 	/**
 	 * ajoute un service au serveur
