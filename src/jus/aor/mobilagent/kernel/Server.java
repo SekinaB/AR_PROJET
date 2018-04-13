@@ -81,14 +81,14 @@ public final class Server implements _Server {
 	 */
 	public final void addService(String name, String classeName, String codeBase, Object... args) {
 		try {
-			// Creation du ClassLoader pour server 
+			// Creation du ClassLoader pour server
 			BAMServerClassLoader bamScl = new BAMServerClassLoader(new URL[] {}, this.getClass().getClassLoader());
 			bamScl.addURL(new URL(codeBase));
 
 			// Rechercher la classe, le constructeur puis instancier le service
 			_Service<?> service = (_Service<?>) Class.forName(classeName, true, bamScl).getConstructor(String.class)
 					.newInstance(args[0]);
-			
+
 			// Ajouter le service
 			agentServer.addService(name, service);
 		} catch (Exception ex) {
@@ -115,17 +115,16 @@ public final class Server implements _Server {
 	public final void deployAgent(String classeName, Object[] args, String codeBase, List<String> etapeAddress,
 			List<String> etapeAction) {
 		try {
-			_Agent agent = (_Agent) Class.forName(classeName).getConstructor(String.class).newInstance(args[0]);
+			BAMAgentClassLoader bamAcl = new BAMAgentClassLoader(codeBase, this.getClass().getClassLoader());
+			_Agent agent = (_Agent) Class.forName(classeName, true, bamAcl).getConstructor(Object[].class).newInstance(new Object[]{args});
 			agent.init(agentServer, this.name);
 
 			for (int i = 0; i < etapeAction.size(); i++) {
 				Field field = agent.getClass().getDeclaredField(etapeAction.get(i));
 				field.setAccessible(true);
-				Object value = field.get(agent);
-				agent.addEtape(new Etape(new URI(etapeAddress.get(i)), (_Action) value));
+				_Action action = (_Action) field.get(agent);
+				agent.addEtape(new Etape(new URI(etapeAddress.get(i)), action));
 			}
-
-			// A COMPLETER en terme de startAgent
 		} catch (Exception ex) {
 			logger.log(Level.FINE, " erreur durant le lancement du serveur" + this, ex);
 			return;
@@ -159,15 +158,15 @@ public final class Server implements _Server {
 			// Send the jar
 			oos.writeObject(jar);
 			logger.log(Level.INFO, "Jar sent");
-			
+
 			// Send Agent
 			oos.writeObject(agent);
 			logger.log(Level.INFO, "Agent sent");
-			
+
 			// Close sockets
 			oos.close();
 			os.close();
-			
+
 			socket.close();
 		} catch (Exception e) {
 			System.out.println(e);

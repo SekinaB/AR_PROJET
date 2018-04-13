@@ -23,7 +23,7 @@ public class Agent implements _Agent {
 	private Route route;
 
 	// Origine de l'agent
-	private AgentServer agentServer;
+	public AgentServer agentServer;
 
 	// Server courant
 	private transient AgentServer server;

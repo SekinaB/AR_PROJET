@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.RMISecurityManager;
+import java.lang.SecurityManager;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class Starter implements _Server {
 		// récupération du niveau de log
 		java.util.logging.Level level;
 		try {
-			level = Level.parse(System.getProperty("LEVEL"));
+			level = Level.ALL;
 		} catch (NullPointerException e) {
 			level = java.util.logging.Level.OFF;
 		} catch (IllegalArgumentException e) {
@@ -82,7 +82,7 @@ public class Starter implements _Server {
 	protected void createServer(int port, String name)
 			throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
-		loader = new BAMServerClassLoader(new URL[] { new URL("file:///.../MobilagentServer.jar") },
+		loader = new BAMServerClassLoader(new URL[] { new URL("file://jarbuild/MobilagentServer.jar") },
 				this.getClass().getClassLoader());
 		classe = (Class<jus.aor.mobilagent.kernel.Server>) Class.forName("jus.aor.mobilagent.kernel.Server", true,
 				loader);
@@ -214,7 +214,7 @@ public class Starter implements _Server {
 	 */
 	public static void main(String... args) {
 		if (System.getSecurityManager() == null)
-			System.setSecurityManager(new RMISecurityManager());
+			System.setSecurityManager(new SecurityManager());
 		new Starter(args);
 	}
 }

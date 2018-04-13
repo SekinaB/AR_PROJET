@@ -14,7 +14,7 @@ import java.net.*;
  * 
  * @author Morat
  */
-final class AgentServer implements Runnable {
+public final class AgentServer implements Runnable {
 	/** le logger de ce serveur */
 	private Logger logger;
 	/** La table des services utilisables sur ce serveur */
@@ -131,7 +131,7 @@ final class AgentServer implements Runnable {
 	 * 
 	 * @return l'URI du serveur
 	 */
-	URI site() {
+	public URI site() {
 		try {
 			return new URI("mobilagent://" + InetAddress.getLocalHost().getHostName() + ":" + port);
 		} catch (Exception e) {
