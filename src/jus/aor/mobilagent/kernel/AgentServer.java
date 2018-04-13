@@ -7,14 +7,10 @@ import java.util.logging.Logger;
 import java.net.*;
 
 /**
- * <<<<<<< HEAD Le server qui supporte le modï¿½le du bus ï¿½ agents mobiles
- * "mobilagent". Lorsqu'un agent se prï¿½sente, le serveur charge son codebase et
- * l'objet reprï¿½sentant cet agent, puis il active cet objet qui exï¿½cute l'action
- * que l'agent a ï¿½ rï¿½aliser sur ce serveur. ======= Le server qui supporte le
- * modï¿½le du bus ï¿½ agents mobiles "mobilagent". Lorsqu'un agent se prï¿½sente, le
- * serveur charge son codebase et l'objet reprï¿½sentant cet agent, puis il active
- * cet objet qui exï¿½cute l'action que l'agent a ï¿½ rï¿½aliser sur ce serveur.
- * >>>>>>> branch 'Objectif3' of https://github.com/SekinaB/AR_PROJET
+ * Le server qui supporte le modï¿½le du bus ï¿½ agents mobiles "mobilagent".
+ * Lorsqu'un agent se prï¿½sente, le serveur charge son codebase et l'objet
+ * reprï¿½sentant cet agent, puis il active cet objet qui exï¿½cute l'action que
+ * l'agent a ï¿½ rï¿½aliser sur ce serveur.
  * 
  * @author Morat
  */
@@ -36,10 +32,8 @@ final class AgentServer implements Runnable {
 	 * L'initialisation du server
 	 * 
 	 * @param port
-	 *            <<<<<<< HEAD the port oï¿½ est attachï¿½ le srvice du bus ï¿½ agents
-	 *            mobiles ======= the port oï¿½ est attachï¿½ le srvice du bus ï¿½
-	 *            agents mobiles >>>>>>> branch 'Objectif3' of
-	 *            https://github.com/SekinaB/AR_PROJET
+	 *            the port oï¿½ est attachï¿½ le srvice du bus ï¿½ agents
+	 *            mobiles
 	 * @param name
 	 *            le nom du serveur
 	 * @throws Exception
@@ -62,25 +56,29 @@ final class AgentServer implements Runnable {
 	public void run() {
 		running = true;
 		try {
-			s = new ServerSocket(this.port);
 
-			// On doit toujours Ãªtre Ã  l'Ã©coute
-			// TODO : correct this stuff I'm sure it's wrong
-			while (true) {
+			// On doit toujours être à l'écoute tant que agent en vie
+			while (running) {
 				// Accepter clients
 				Socket clientSocket = s.accept();
-
-				// Je choppe l'agent
+				logger.log(Level.INFO, "Connection accepted");
+				
+				// Récupértion de l'agent
 				Agent agent = (Agent) this.getAgent(clientSocket);
 
-				// Je dÃ©marre l'agent
-				agent.run();
+				// On ferme la connexion
+				clientSocket.close();
 
+				// Je démarre l'agent si il existe
+				if (agent != null) {
+					logger.log(Level.INFO, "Agent launched");
+					new Thread(agent).start();
+				}
 			}
 		} catch (Exception e) {
+			System.out.println(e);
 			e.printStackTrace();
 		}
-		// A COMPLETER
 	}
 
 	/**
@@ -110,8 +108,8 @@ final class AgentServer implements Runnable {
 	}
 
 	/**
-	 * restitue le service de nom name ou null si celui-ci n'est pas attachï¿½ au
-	 * serveur.
+	 * restitue le service de nom name ou null si celui-ci n'est pas attachï¿½
+	 * au serveur.
 	 * 
 	 * @param name
 	 * @return le service souhaitï¿½ ou null
@@ -135,47 +133,46 @@ final class AgentServer implements Runnable {
 	}
 
 	private _Agent getAgent(Socket aSocket) {
-		BAMAgentClassLoader BAMAcl = new BAMAgentClassLoader(getClass().getClassLoader());
-		// TODO
-		// J'ouvre le stream d'entrÃ©e
-		InputStream is;
-		try {
-			is = aSocket.getInputStream();
-			AgentInputStream ois = new AgentInputStream(is, BAMAcl);
+		_Agent agent = null;
+		BAMAgentClassLoader bamAcl = new BAMAgentClassLoader(getClass().getClassLoader());
 
-			// Je choppe le Jar
-			Object obj = ois.readObject();
+		try {
+			// J'ouvre le stream d'entrée
+			InputStream is = aSocket.getInputStream();
+			AgentInputStream ais = new AgentInputStream(is, bamAcl);
+
+			// Recupération du Jar
+			Object obj = ais.readObject();
+
+			// On test si c'est bien le Jar
 			if (obj.getClass().getSimpleName() == "Jar") {
-				// Give it the right type
-				Jar BAMAcljar = (Jar) obj;
-				// Integrate the code in the new class loader
-				BAMAcl.integrateCode(BAMAcljar);
-				// Read what's next
-				obj = ois.readObject();
+				// Integrate the code in the class loader
+				bamAcl.integrateCode((Jar) obj);
+				logger.log(Level.INFO, "Jar ok !");
+				// Read what's next : l'agent
+				obj = ais.readObject();
 			}
 
-			// Je choppe l'agent
+			// On test si c'est bien l'agent
 			if (obj.getClass().getSimpleName() == "_Agent") {
-				// Give it the right type
-				_Agent agent = (_Agent) obj;
-
+				agent = (_Agent) obj;
 				// Initialisation de l'agent
 				agent.reInit(this, name);
-
-				return agent;
+				logger.log(Level.INFO, "Agent ok !");
 			}
+			ais.close();
 		} catch (Exception e) {
+			System.out.println(e);
 			e.printStackTrace();
 		}
-		return null;
+		return agent;
+
 	}
 }
 
 /**
- * <<<<<<< HEAD ObjectInputStream spï¿½cifique au bus ï¿½ agents mobiles. Il permet
- * d'utiliser le ======= ObjectInputStream spï¿½cifique au bus ï¿½ agents mobiles.
- * Il permet d'utiliser le >>>>>>> branch 'Objectif3' of
- * https://github.com/SekinaB/AR_PROJET loader de l'agent.
+ * ObjectInputStream spï¿½cifique au bus ï¿½ agents mobiles. Il permet
+ * d'utiliser le loader de l'agent.
  * 
  * @author Morat
  */
