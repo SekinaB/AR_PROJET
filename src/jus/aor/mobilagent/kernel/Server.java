@@ -3,8 +3,13 @@
  */
 package jus.aor.mobilagent.kernel;
 
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -16,7 +21,7 @@ import jus.aor.mobilagent.kernel._Agent;
 
 /**
  * Le serveur principal permettant le lancement d'un serveur d'agents mobiles et
- * les fonctions permettant de déployer des services et des agents.
+ * les fonctions permettant de dï¿½ployer des services et des agents.
  * 
  * @author Morat
  */
@@ -24,11 +29,11 @@ public final class Server implements _Server {
 	/** le nom logique du serveur */
 	protected String name;
 	/**
-	 * le port oÃ¹ sera ataché le service du bus à agents mobiles. Pafr
-	 * défaut on prendra le port 10140
+	 * le port oÃ¹ sera atachï¿½ le service du bus ï¿½ agents mobiles. Pafr dï¿½faut on
+	 * prendra le port 10140
 	 */
 	protected int port = 10140;
-	/** le server d'agent démarré sur ce noeud */
+	/** le server d'agent dï¿½marrï¿½ sur ce noeud */
 	protected AgentServer agentServer;
 	/** le nom du logger */
 	protected String loggerName;
@@ -36,10 +41,10 @@ public final class Server implements _Server {
 	protected Logger logger = null;
 
 	/**
-	 * Démarre un serveur de type mobilagent
+	 * Dï¿½marre un serveur de type mobilagent
 	 * 
 	 * @param port
-	 *            le port d'écuote du serveur d'agent
+	 *            le port d'ï¿½cuote du serveur d'agent
 	 * @param name
 	 *            le nom du serveur
 	 */
@@ -51,9 +56,11 @@ public final class Server implements _Server {
 			loggerName = "jus/aor/mobilagent/" + InetAddress.getLocalHost().getHostName() + "/" + this.name;
 			logger = Logger.getLogger(loggerName);
 			/*
-			 * démarrage du server d'agents mobiles attaché à cette machine
+			 * dï¿½marrage du server d'agents mobiles attachï¿½ ï¿½ cette machine
 			 */
 			// A COMPLETER
+			agentServer = new AgentServer(port, name);
+			new Thread(agentServer).start();
 			/* temporisation de mise en place du server d'agents */
 			Thread.sleep(1000);
 		} catch (Exception ex) {
@@ -63,7 +70,7 @@ public final class Server implements _Server {
 	}
 
 	/**
-	 * Ajoute le service caractérisé par les arguments
+	 * Ajoute le service caractï¿½risï¿½ par les arguments
 	 * 
 	 * @param name
 	 *            nom du service
@@ -76,7 +83,10 @@ public final class Server implements _Server {
 	 */
 	public final void addService(String name, String classeName, String codeBase, Object... args) {
 		try {
-			// A COMPLETER
+			// On va chercher la classe puis le constructeur puis on instancie
+			// le service
+			agentServer.addService(name,
+					(_Service<?>) Class.forName(classeName).getConstructor(String.class).newInstance(args[0]));
 		} catch (Exception ex) {
 			logger.log(Level.FINE, " erreur durant le lancement du serveur" + this, ex);
 			return;
@@ -84,7 +94,7 @@ public final class Server implements _Server {
 	}
 
 	/**
-	 * deploie l'agent caractérisé par les arguments sur le serveur
+	 * deploie l'agent caractï¿½risï¿½ par les arguments sur le serveur
 	 * 
 	 * @param classeName
 	 *            classe du service
@@ -93,13 +103,23 @@ public final class Server implements _Server {
 	 * @param codeBase
 	 *            codebase du service
 	 * @param etapeAddress
-	 *            la liste des adresse des étapes
+	 *            la liste des adresse des ï¿½tapes
 	 * @param etapeAction
-	 *            la liste des actions des étapes
+	 *            la liste des actions des ï¿½tapes
 	 */
 	public final void deployAgent(String classeName, Object[] args, String codeBase, List<String> etapeAddress,
 			List<String> etapeAction) {
 		try {
+			_Agent agent = (_Agent) Class.forName(classeName).getConstructor(String.class).newInstance(args[0]);
+			agent.init(agentServer, this.name);
+
+			for (int i = 0; i < etapeAction.size(); i++) {
+				Field field = agent.getClass().getDeclaredField(etapeAction.get(i));
+				field.setAccessible(true);
+				Object value = field.get(agent);
+				agent.addEtape(new Etape(new URI(etapeAddress.get(i)), (_Action) value));
+			}
+
 			// A COMPLETER en terme de startAgent
 		} catch (Exception ex) {
 			logger.log(Level.FINE, " erreur durant le lancement du serveur" + this, ex);
@@ -109,15 +129,56 @@ public final class Server implements _Server {
 
 	/**
 	 * Primitive permettant de "mover" un agent sur ce serveur en vue de son
-	 * exécution immédiate.
+	 * exï¿½cution immï¿½diate.
 	 * 
 	 * @param agent
-	 *            l'agent devant Ãªtre exécuté
+	 *            l'agent devant Ãªtre exï¿½cutï¿½
 	 * @param loader
-	 *            le loader à utiliser pour charger les classes.
+	 *            le loader ï¿½ utiliser pour charger les classes.
 	 * @throws Exception
 	 */
 	protected void startAgent(_Agent agent, BAMAgentClassLoader loader) throws Exception {
-		// A COMPLETER
+		// Ouvrir une socket
+		Socket socket;
+		try {
+			socket = new Socket(agentServer.site().getHost(), agentServer.site().getPort());
+
+			System.out.println(
+					this.toString() + " : Connected to " + socket.getInetAddress());
+
+			// Ouvrir un stream out et ObjOut
+			OutputStream os = socket.getOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+
+			// TODO : enlever ces lignes
+			// Completely useless, but I need them for psychological reasons
+			InputStream is = socket.getInputStream();
+			ObjectInputStream ois = new ObjectInputStream(is);
+
+			// ClassLoader stuff : page 4 Figure 3
+			//BAMAgentClassLoader BAMAcl = (BAMAgentClassLoader) this.getClass().getClassLoader();
+			Jar BAMAcljar = loader.extractCode();
+
+			// Send BAMAcljar
+			oos.writeObject(BAMAcljar);
+
+			// Send Agent
+			oos.writeObject(agent);
+
+			// Close sockets
+			oos.close();
+			os.close();
+
+			// TODO : enlever
+			ois.close();
+			is.close();
+
+			socket.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 }
