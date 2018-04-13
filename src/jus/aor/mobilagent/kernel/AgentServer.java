@@ -185,7 +185,7 @@ final class AgentServer implements Runnable {
  */
 class AgentInputStream extends ObjectInputStream {
 	/**
-	 * le classLoader � utiliser
+	 * le classLoader a utiliser
 	 */
 	BAMAgentClassLoader loader;
 
