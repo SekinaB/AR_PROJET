@@ -21,7 +21,7 @@ public final class AgentServer implements Runnable {
 	private Map<String, _Service<?>> services;
 	/** Le port auquel est attachï¿½ le serveur */
 	private int port;
-	/** l'ï¿½tat du serveur */
+	/** l'etat du serveur */
 	private boolean running;
 	/** la socket de communication du bus */
 	private ServerSocket s;
@@ -32,8 +32,7 @@ public final class AgentServer implements Runnable {
 	 * L'initialisation du server
 	 * 
 	 * @param port
-	 *            the port oï¿½ est attachï¿½ le srvice du bus ï¿½ agents
-	 *            mobiles
+	 *            the port ou est attache le service du bus ï¿½ agents mobiles
 	 * @param name
 	 *            le nom du serveur
 	 * @throws Exception
@@ -60,8 +59,9 @@ public final class AgentServer implements Runnable {
 			// On doit toujours être à l'écoute tant que agent en vie
 			while (running) {
 				// Accepter clients
+				logger.log(Level.INFO, "Connection ...");
 				Socket clientSocket = s.accept();
-				logger.log(Level.INFO, "Connection accepted");
+				logger.log(Level.INFO, "... accepted");
 
 				// Récupértion de l'agent
 				Agent agent = (Agent) this.getAgent(clientSocket);
@@ -69,11 +69,13 @@ public final class AgentServer implements Runnable {
 				// On ferme la connexion
 				clientSocket.close();
 
-				// Je démarre l'agent si il existe
-				if (agent != null) {
-					logger.log(Level.INFO, "Agent launched");
-					new Thread(agent).start();
-				}
+				System.out.println("Agent HEEEEEEEEEYYYYYYYYY");
+
+				// Je démarre l'agent
+				logger.log(Level.INFO, "Agent launched");
+				new Thread(agent).start();
+				System.out.println("Agent launched");
+
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -86,6 +88,8 @@ public final class AgentServer implements Runnable {
 	 */
 	public void stop() {
 		this.running = false;
+		System.out.println("Agent stopped");
+
 	}
 
 	/**
@@ -140,7 +144,6 @@ public final class AgentServer implements Runnable {
 	}
 
 	private _Agent getAgent(Socket aSocket) {
-		_Agent agent = null;
 		BAMAgentClassLoader bamAcl = new BAMAgentClassLoader(getClass().getClassLoader());
 
 		try {
@@ -148,32 +151,27 @@ public final class AgentServer implements Runnable {
 			InputStream is = aSocket.getInputStream();
 			AgentInputStream ais = new AgentInputStream(is, bamAcl);
 
-			// Recupération du Jar
-			Object obj = ais.readObject();
+			// Recuperation du Jar
+			Jar jar = (Jar) ais.readObject();
 
-			// On test si c'est bien le Jar
-			if (obj.getClass().getSimpleName() == "Jar") {
-				// Integrate the code in the class loader
-				bamAcl.integrateCode((Jar) obj);
-				logger.log(Level.INFO, "Jar ok !");
-				// Read what's next : l'agent
-				obj = ais.readObject();
-			}
+			// Integrate the code in the class loader
+			bamAcl.integrateCode(jar);
+			logger.log(Level.INFO, "Jar ok !");
 
-			// On test si c'est bien l'agent
-			if (obj.getClass().getSimpleName() == "_Agent") {
-				agent = (_Agent) obj;
-				// Initialisation de l'agent
-				agent.reInit(this, name);
-				logger.log(Level.INFO, "Agent ok !");
-			}
+			// Recuperation de l'agent
+			_Agent agent = (_Agent) ais.readObject();
+			// Initialisation de l'agent
+			agent.reInit(this, name);
+			logger.log(Level.INFO, "Agent ok !");
 			ais.close();
+
+			return agent;
 		} catch (Exception e) {
 			System.out.println(e);
 			e.printStackTrace();
 		}
-		return agent;
 
+		return null;
 	}
 }
 

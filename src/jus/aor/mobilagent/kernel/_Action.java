@@ -16,7 +16,13 @@ public interface _Action extends Serializable {
 		
 		private static final long serialVersionUID = 1L;
 
-		public void execute(){};
+		public void execute(){
+			System.out.println("NIHIL executed");
+		}
+		
+		public String toString(){
+			return "NIHIL";
+		}
 	};
 
 	/**

@@ -36,14 +36,17 @@ public class Agent implements _Agent {
 	public void run() {
 		// Recuperation de l'etape actuelle
 		Etape etape = route.next();
-
+		System.out.println("Recuperation de l'etape courante");
+		
 		// Execution l'action associee
 		etape.action.execute();
-
+		System.out.println("Execution de l'action");
+		
 		// Deplacement vers le prochaine server si il y en a un
-		if (route.hasNext()) {
+		if (route.hasNext) {
 			try {
 				move();
+				System.out.println("Depacement de l'agent");
 			} catch (Exception e) {
 				System.out.println(e);
 				e.printStackTrace();
@@ -51,6 +54,7 @@ public class Agent implements _Agent {
 		} else {
 			// Sinon l'agent a termine son travail
 			agentServer.stop();
+			System.out.println("Execution de l'agent finie");
 		}
 	}
 
@@ -77,6 +81,7 @@ public class Agent implements _Agent {
 		this.agentServer = agentServer;
 		this.serverName = serverName;
 		route = new Route(new Etape(agentServer.site(), _Action.NIHIL));
+		System.out.println("Agent initié");
 	}
 
 	/**
@@ -92,6 +97,7 @@ public class Agent implements _Agent {
 	public void reInit(AgentServer server, String serverName) {
 		this.server = server;
 		this.serverName = serverName;
+		System.out.println("Agent reinitié");
 	}
 
 	private void move() throws Exception {

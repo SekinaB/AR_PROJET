@@ -7,6 +7,7 @@ import jus.util.Dialogue;
 
 /**
  * Un Handler permettant d'écrire sur le support IO.
+ * 
  * @author Morat
  */
 class IOHandler extends Handler {
@@ -18,19 +19,32 @@ class IOHandler extends Handler {
 		io = new Dialogue();
 		io.setOut();
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.util.logging.Handler#close()
 	 */
 	@Override
-	public void close() throws SecurityException{}
-	/* (non-Javadoc)
+	public void close() throws SecurityException {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.util.logging.Handler#flush()
 	 */
 	@Override
-	public void flush(){}
-	/* (non-Javadoc)
+	public void flush() {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.util.logging.Handler#publish(java.util.logging.LogRecord)
 	 */
 	@Override
-	public void publish(LogRecord record){io.println(record.getMessage());}
+	public void publish(LogRecord record) {
+		io.println(record.getMessage());
+	}
 }

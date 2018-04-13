@@ -66,11 +66,11 @@ public class Starter implements _Server {
 			doc = docBuilder.parse(new File(args[0]));
 			int port = Integer.parseInt(
 					doc.getElementsByTagName("port").item(0).getAttributes().getNamedItem("value").getNodeValue());
-			// Création du serveur
+			// Creation du serveur
 			createServer(port, args[1]);
 			// ajout des services
 			addServices();
-			// déploiement d'agents
+			// deploiement d'agents
 			deployAgents();
 		} catch (Exception ex) {
 			logger.log(Level.FINE, "Ce programme nécessite un argument : <conf file> <name server>", ex);
