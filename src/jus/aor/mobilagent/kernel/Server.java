@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 
 import jus.aor.mobilagent.kernel.BAMAgentClassLoader;
 import jus.aor.mobilagent.kernel._Agent;
+import jus.aor.mobilagent.obj6.InSigner;
+import jus.aor.mobilagent.obj6._InSigner;
 
 /**
  * Le serveur principal permettant le lancement d'un serveur d'agents mobiles et
@@ -180,5 +182,23 @@ public final class Server implements _Server {
 		}
 		
 		
+	}
+	public void signIn(String service) {
+		try {
+			_InSigner InSignerCenter = (InSigner) java.rmi.Naming.lookup("//localhost:2001/InSignerCenter");
+			InSignerCenter.signIn(service, this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public boolean checkout(String service) {
+		try {
+			_InSigner InSignerCenter = (InSigner) java.rmi.Naming.lookup("//localhost:2001/InSignerCenter");
+			return InSignerCenter.checkout(service);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 }
