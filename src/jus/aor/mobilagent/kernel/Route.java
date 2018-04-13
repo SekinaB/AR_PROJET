@@ -11,25 +11,27 @@ import java.util.NoSuchElementException;
 
 /**
  * Définit la feuille de route que l'agent va suivre
+ * 
  * @author Morat
  */
 class Route implements Iterable<Etape>, Serializable {
 	private static final long serialVersionUID = 9081294824590167316L;
-	
+
 	/** la liste des étapes à parcourir autres que la dernière */
 	protected List<Etape> route;
-	
+
 	/**
 	 * la dernière étape de la feuille de route de l'agent qui désigne le
 	 * serveur de départ.
 	 */
 	protected Etape retour;
-	
-	/** Indique si la feuille de route est Ã©puisÃ©e ou non. */
+
+	/** Indique si la feuille de route est epuisee ou non. */
 	protected boolean hasNext;
 
 	/**
 	 * Construction d'une route.
+	 * 
 	 * @param retour
 	 *            le server initial et de retour.
 	 */
@@ -51,36 +53,41 @@ class Route implements Iterable<Etape>, Serializable {
 
 	/**
 	 * Restitue la prochaine étape ou la dernière qui est la base de départ.
+	 * 
 	 * @return la prochaine étape.
 	 */
 	Etape get() throws NoSuchElementException {
-		if(this.hasNext()){
-			return this.iterator().next();
-		}
-		else {
+		if (route.size() > 0) {
+			// Si il y a une etape suivante alors on la recupere
+			return route.get(0);
+		} else {
+			// Sinon on met hasNext a jour et on revoie le depart
+			hasNext = false;
 			return retour;
 		}
 	}
 
 	/**
-	 * Restitue la prochaine étape et élimine de la route ou la dernière qui
-	 * est la base de d"part.
+	 * Restitue la prochaine étape et élimine de la route ou la dernière qui est
+	 * la base de d"part.
+	 * 
 	 * @return la prochaine étape.
 	 */
 	Etape next() throws NoSuchElementException {
-		Etape next;
-		if(this.hasNext()){
-			next = this.iterator().next();
-			this.iterator().remove();
-			return next;
-		}
-		else {
+		if (route.size() > 0) {
+			// Si il y a une etape suivante alors on la recupere en l'elevant de
+			// la liste
+			return route.remove(0);
+		} else {
+			// Sinon on met hasNext a jour et on revoie le depart
+			hasNext = false;
 			return retour;
 		}
 	}
 
 	/**
 	 * Il y a-t-il encore une Ã©tape Ã  parcourir.
+	 * 
 	 * @return vrai si une Ã©tape est possible.
 	 */
 	public boolean hasNext() {

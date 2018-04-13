@@ -27,8 +27,8 @@ public class Jar implements Iterable<Map.Entry<String, byte[]>>, Serializable {
 	private Map<String, byte[]> contents = new HashMap<String, byte[]>();
 
 	/**
-	 * création d'un Jar. l'ensemble des ressources contenues dans le fichier
-	 * peuvent être accédées via les méthodes getResource ou getClass.
+	 * creation d'un Jar. l'ensemble des ressources contenues dans le fichier
+	 * peuvent etre accedees via les methodes getResource ou getClass.
 	 * 
 	 * @param fileName
 	 *            le nom du fichier jar
@@ -38,7 +38,7 @@ public class Jar implements Iterable<Map.Entry<String, byte[]>>, Serializable {
 		Map<String, Integer> htSizes = new HashMap<String, Integer>();
 		// le fichier jar
 		JarFile jar = new JarFile(fileName);
-		// l'ensemble des entrées contenues dans le jar
+		// l'ensemble des entrees contenues dans le jar
 		Enumeration<? extends JarEntry> e = jar.entries();
 		JarEntry entry;
 		// calcul de la taille de chacun des composants du jar
@@ -54,7 +54,7 @@ public class Jar implements Iterable<Map.Entry<String, byte[]>>, Serializable {
 		entry = null;
 		int size, sizeRead, sizeLastRead;
 		byte[] buffer;
-		// récupération des composants du jar
+		// recuperation des composants du jar
 		while ((entry = jis.getNextJarEntry()) != null) {
 			if (entry.isDirectory())
 				continue;
@@ -165,11 +165,11 @@ public class Jar implements Iterable<Map.Entry<String, byte[]>>, Serializable {
 	}
 
 	/**
-	 * remplace le séparateur de package par le séparateur de niveau.
+	 * remplace le separateur de package par le separateur de niveau.
 	 * 
 	 * @param className
 	 *            le nom logique de la classe
-	 * @return le nom physique associé au nomp logique de la classe.
+	 * @return le nom physique associe au nomp logique de la classe.
 	 */
 	protected String formatClassName(String className) {
 		return className.replace(".", "/") + ".class";

@@ -62,7 +62,7 @@ final class AgentServer implements Runnable {
 				// Accepter clients
 				Socket clientSocket = s.accept();
 				logger.log(Level.INFO, "Connection accepted");
-				
+
 				// Récupértion de l'agent
 				Agent agent = (Agent) this.getAgent(clientSocket);
 
@@ -80,8 +80,11 @@ final class AgentServer implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	
-	public void stop(){
+
+	/**
+	 * Arrete l'execution de l'agent
+	 */
+	public void stop() {
 		this.running = false;
 	}
 
